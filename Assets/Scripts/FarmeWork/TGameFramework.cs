@@ -16,11 +16,7 @@ public sealed class TGameFramework
     /// </summary>
     public static void Initialize()
     {
-        if(!Initialized)
-        {
-            Instance = new TGameFramework();
-            Initialized = true;
-        }
+        Instance = new TGameFramework();
     }
 
     /// <summary>
@@ -53,6 +49,9 @@ public sealed class TGameFramework
         m_allmodules.Add(moduleType, module);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void Update()
     {
         if (!Initialized)
@@ -66,5 +65,76 @@ public sealed class TGameFramework
         {
             item.OnModuleUpdate(deltaTime);
         }
+    }
+
+    public void LateUpdate()
+    {
+        if (!Initialized)
+            return;
+        if (m_allmodules == null)
+            return;
+
+        float deltaTime = UnityEngine.Time.deltaTime;
+        foreach (var item in m_allmodules.Values)
+        {
+            item.OnModuleLateUpdate(deltaTime);
+        }
+    }
+
+    public void FixedUpdate()
+    {
+        if (!Initialized)
+            return;
+        if (m_allmodules == null)
+            return;
+
+        float deltaTime= UnityEngine.Time.deltaTime;
+        foreach (var item in m_allmodules.Values)
+        {
+            item.OnModuleFixedUpdate(deltaTime);
+        }
+    }
+
+    public void InitModules()
+    {
+        if (Initialized)
+            return;
+        Initialized = true;
+
+        foreach (var item in m_allmodules.Values)
+        {
+            item.OnModuleInit();
+        }
+    }
+
+    public void StartModules()
+    {
+        if(m_allmodules==null)
+            return;
+        if (!Initialized)
+            return;
+
+        foreach (var item in m_allmodules.Values)
+        {
+            item.OnModuleStart();
+        }
+    }
+
+    public void Destroy()
+    {
+        if (!Initialized)
+            return;
+        if (Instance != this)
+            return;
+        if (m_allmodules == null)
+            return;
+
+        foreach (var item in Instance.m_allmodules.Values)
+        {
+            item.OnModuleStop();
+        }
+
+        Instance = null;
+        Initialized = false;
     }
 }
