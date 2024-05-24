@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 发送消息的消息号和内容
+/// </summary>
 public class MessageType 
 {
     public struct TestUIMessage

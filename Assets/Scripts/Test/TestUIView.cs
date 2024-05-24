@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class TestUIView :MonoBehaviour
 {
     public Button testbtn;
+    public Text test_text;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class TestUIView :MonoBehaviour
 
     private async Task TestUICallMessage(MessageType.TestUICallMessage arg)
     {
-        
+        test_text.text = arg.name;
         Debug.Log("这是我的回调消息"+arg.name+"和测试数量："+arg.callcount);
         await Task.Yield();
     }
