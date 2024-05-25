@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public class BaseGameModule : MonoBehaviour
 {
-    //封装了声明基本周期方法
+    //声明基本周期方法
     private void Awake() { }
     private void Start() { }
     private void Update() { }

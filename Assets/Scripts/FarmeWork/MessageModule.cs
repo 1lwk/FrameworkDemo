@@ -54,29 +54,29 @@ public class MessageModule : BaseGameModule
         // 初始化一个字典，键为类型，值为对象列表
         globalMessageHandlers = new Dictionary<Type, List<object>>();
 
-        // 遍历调用该方法的程序集中的所有类型
+        //遍历调用该方法的程序集中的所有类型
         foreach (var type in Assembly.GetCallingAssembly().GetTypes())
         {
-            // 如果类型是抽象类，则跳过
+            //如果类型是抽象类，则跳过
             if (type.IsAbstract)
                 continue;
 
-            // 获取类型上标记的 MessageHandlerAttribute 特性
+            //获取类型上标记的 MessageHandlerAttribute 特性
             MessageHandlerAttribute messageHandlerAttribute = type.GetCustomAttribute<MessageHandlerAttribute>(true);
 
-            // 如果类型上有 MessageHandlerAttribute 特性
+            //如果类型上有 MessageHandlerAttribute 特性
             if (messageHandlerAttribute != null)
             {
-                // 创建该类型的实例，并强制转换为 IMessageHandler 接口
+                //创建该类型的实例，并强制转换为 IMessageHandler 接口
                 IMessageHandler messageHandler = Activator.CreateInstance(type) as IMessageHandler;
 
-                // 如果 globalMessageHandlers 字典中没有该类型的键，则添加一个新的键值对
+                //如果 globalMessageHandlers 字典中没有该类型的键，则添加一个新的键值对
                 if (!globalMessageHandlers.ContainsKey(messageHandler.GetHandlerType()))
                 {
                     globalMessageHandlers.Add(messageHandler.GetHandlerType(), new List<object>());
                 }
 
-                // 将实例添加到对应类型键的列表中
+                //将实例添加到对应类型键的列表中
                 globalMessageHandlers[messageHandler.GetHandlerType()].Add(messageHandler);
             }
         }
@@ -120,7 +120,7 @@ public class MessageModule : BaseGameModule
     /// <returns>异步任务</returns>
     public async Task Post<T>(T arg) where T : struct
     {
-        // 处理全局消息处理程序
+        //处理全局消息处理程序
         if (globalMessageHandlers.TryGetValue(typeof(T), out List<object> globalHandlerList))
         {
             foreach (var handler in globalHandlerList)
