@@ -21,7 +21,7 @@ public class MessageModule : BaseGameModule
     private Dictionary<Type, List<object>> localMessageHandlers; // 局部消息处理程序字典
 
     /// <summary>
-    /// 监视器，用于监视消息
+    /// 监视
     /// </summary>
     public Monitor Monitor { get; private set; }
 
@@ -37,7 +37,7 @@ public class MessageModule : BaseGameModule
     }
 
     /// <summary>
-    /// 模块停止时调用
+    /// 模块暂停时候调用
     /// </summary>
     protected internal override void OnModuleStop()
     {

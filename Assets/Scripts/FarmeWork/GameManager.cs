@@ -10,6 +10,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     /// <summary>
+    /// 流程组件
+    /// </summary>
+    [Module(2)]
+    public static ProcedureModule Procedure { get => TGameFramework.Instance.GetModule<ProcedureModule>(); }
+    /// <summary>
     /// 消息模块，使用Module特性标记，优先级为6
     /// </summary>
     [Module(6)]
@@ -30,7 +35,7 @@ public class GameManager : MonoBehaviour
         }
 
         activing = true;
-        DontDestroyOnLoad(gameObject); // 防止在加载新场景时销毁当前对象
+        DontDestroyOnLoad(gameObject); //跳转不销毁
 
         TGameFramework.Initialize(); // 初始化游戏框架
         StartupModules(); // 启动模块
@@ -87,7 +92,7 @@ public class GameManager : MonoBehaviour
     public void StartupModules()
     {
         List<ModuleAttribute> moduleAttrs = new List<ModuleAttribute>();
-        // 获取当前类的所有属性信息，包括公有、私有和静态属性
+        // 获取当前类的所有属性信息，包括公有、私有、静态属性
         PropertyInfo[] propertyInfos = GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Type baseCompType = typeof(BaseGameModule);
 
@@ -97,7 +102,7 @@ public class GameManager : MonoBehaviour
             PropertyInfo property = propertyInfos[i];
             // 检查属性类型是否继承自BaseGameModule
             if (!baseCompType.IsAssignableFrom(property.PropertyType))
-                continue;
+               continue;
 
             // 获取属性上的ModuleAttribute特性
             object[] attrs = property.GetCustomAttributes(typeof(ModuleAttribute), false);
