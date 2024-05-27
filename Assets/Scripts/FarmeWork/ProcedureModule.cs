@@ -8,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public partial class ProcedureModule : BaseGameModule
 {
+    public int[] age = null; 
     /// <summary>
     /// SerializeField特性是指将私有的字段也显示在unity检视界面
     /// </summary>

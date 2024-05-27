@@ -13,6 +13,7 @@ namespace TGame.Editor.Inspector
         // 序列化属性，用于访问和修改 ProcedureModule 的字段
         private SerializedProperty proceduresProperty; // 提供了一种方法来访问和修改序列化的对象数据，包括数组和列表
         private SerializedProperty defaultProcedureProperty;
+        private SerializedProperty ageproceduresProperty;
 
         // 存储所有过程类型的列表
         private List<string> allProcedureTypes;
@@ -24,7 +25,7 @@ namespace TGame.Editor.Inspector
             // 查找并缓存序列化属性
             proceduresProperty = serializedObject.FindProperty("proceduresNames");//通过序列化的名称查找序列化对象中的对应属性
             defaultProcedureProperty = serializedObject.FindProperty("defaultProcedureName");
-
+            ageproceduresProperty= serializedObject.FindProperty("defaultProcedureName");
             // 更新过程列表
             UpdateProcedures();
         }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using Koakuma.Game;
 
 public class TestMessageHandler : MessageHandler<MessageType.TestUIMessage>
 {

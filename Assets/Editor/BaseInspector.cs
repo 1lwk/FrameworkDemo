@@ -14,6 +14,7 @@ public class BaseInspector : UnityEditor.Editor
     // 在启用检查器时调用
     private void OnEnable()
     {
+        UnityEngine.Debug.Log("sss");
         OnInspectorEnable(); // 调用虚方法，供子类重写
         EditorApplication.update += UpdateEditor; // 订阅编辑器更新事件
     }

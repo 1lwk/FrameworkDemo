@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Koakuma.Game;
 
 /// <summary>
 /// 游戏流程控制脚本基类
