@@ -22,7 +22,7 @@ namespace TGame.Editor.Inspector
         {
             base.OnInspectorEnable(); // 调用基类方法
             // 查找并缓存序列化属性
-            proceduresProperty = serializedObject.FindProperty("proceduresNames");
+            proceduresProperty = serializedObject.FindProperty("proceduresNames");//通过序列化的名称查找序列化对象中的对应属性
             defaultProcedureProperty = serializedObject.FindProperty("defaultProcedureName");
 
             // 更新过程列表
@@ -53,6 +53,7 @@ namespace TGame.Editor.Inspector
                 }
             }
             serializedObject.ApplyModifiedProperties(); // 应用修改
+            serializedObject.ApplyModifiedProperties(); // 应用修改
         }
 
         // 绘制检查器 GUI
@@ -69,7 +70,7 @@ namespace TGame.Editor.Inspector
                         for (int i = 0; i < allProcedureTypes.Count; i++)
                         {
                             GUI.changed = false; // 重置GUI.changed标志
-                            int? index = FindProcedureTypeIndex(allProcedureTypes[i]); // 查找过程类型的索引
+                            int? index = FindProcedureTypeIndex(allProcedureTypes[i]); // 查找过程类型的索引 int?可空类型
                             bool selected = EditorGUILayout.ToggleLeft(allProcedureTypes[i], index.HasValue); // 创建带标签的复选框
                             if (GUI.changed) // 检查GUI.changed标志
                             {
