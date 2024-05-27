@@ -11,7 +11,7 @@ namespace TGame.Editor.Inspector
     public class ProcedureModuleInspector : BaseInspector
     {
         // 序列化属性，用于访问和修改 ProcedureModule 的字段
-        private SerializedProperty proceduresProperty;
+        private SerializedProperty proceduresProperty; // 提供了一种方法来访问和修改序列化的对象数据，包括数组和列表
         private SerializedProperty defaultProcedureProperty;
 
         // 存储所有过程类型的列表
@@ -59,7 +59,7 @@ namespace TGame.Editor.Inspector
         // 绘制检查器 GUI
         public override void OnInspectorGUI()
         {
-            // 禁用游戏运行时的编辑功能
+            // 禁用游戏运行时的编辑功能 防止在运行时进行编辑
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             {
                 if (allProcedureTypes.Count > 0)
@@ -71,7 +71,7 @@ namespace TGame.Editor.Inspector
                         {
                             GUI.changed = false; // 重置GUI.changed标志
                             int? index = FindProcedureTypeIndex(allProcedureTypes[i]); // 查找过程类型的索引 int?可空类型
-                            bool selected = EditorGUILayout.ToggleLeft(allProcedureTypes[i], index.HasValue); // 创建带标签的复选框
+                            bool selected = EditorGUILayout.ToggleLeft(allProcedureTypes[i], index.HasValue); // 创建带标签的复选框 第一个参数表示显示标签的名字 第二个参数是一个布尔值表示是否被选中
                             if (GUI.changed) // 检查GUI.changed标志
                             {
                                 if (selected)
@@ -90,6 +90,7 @@ namespace TGame.Editor.Inspector
             }
             EditorGUI.EndDisabledGroup(); // 结束禁用组
 
+            //arraySize它用于获取或设置数组或列表的大小
             if (proceduresProperty.arraySize == 0)
             {
                 if (allProcedureTypes.Count == 0)
@@ -114,8 +115,10 @@ namespace TGame.Editor.Inspector
                 {
                     // 显示默认状态
                     List<string> selectedProcedures = new List<string>();
+                    //遍历这个数组
                     for (int i = 0; i < proceduresProperty.arraySize; i++)
                     {
+                        //添加到selectedProcedures里面
                         selectedProcedures.Add(proceduresProperty.GetArrayElementAtIndex(i).stringValue);
                     }
                     selectedProcedures.Sort(); // 排序选择的过程类型

@@ -34,7 +34,6 @@ public partial class ProcedureModule : BaseGameModule
         base.OnModuleInit(); // 调用基类的初始化方法
         procedures = new Dictionary<Type, BaseProcedure>(); //初始化流程字典
         bool findDefaultState = false; //标识是否找到默认流程
-
         for (int i = 0; i < proceduresNames.Length; i++) //遍历流程类名数组
         {
             string procedureTypeName = proceduresNames[i]; //获取当前流程类名

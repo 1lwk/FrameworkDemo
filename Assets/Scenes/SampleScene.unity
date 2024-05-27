@@ -981,6 +981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   proceduresNames:
-  - LoginProcedure
   - InitProcedure
+  - LoginProcedure
+  - LaunchProcedure
   defaultProcedureName: InitProcedure
