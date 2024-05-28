@@ -1,3 +1,4 @@
+using Config;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,11 @@ namespace Koakuma.Game
     public class GameManager : MonoBehaviour
     {
         /// <summary>
+        /// 资源组件
+        /// </summary>
+        [Module(1)]
+        public static AssetModule Asset { get => TGameFramework.Instance.GetModule<AssetModule>(); }
+        /// <summary>
         /// 流程组件
         /// </summary>
         [Module(2)]
@@ -22,6 +28,11 @@ namespace Koakuma.Game
         /// </summary>
         [Module(6)]
         public static MessageModule Message { get => TGameFramework.Instance.GetModule<MessageModule>(); }
+        /// <summary>
+        /// UI模块 使用Module特性标记 优先级为3
+        /// </summary>
+        [Module(3)]
+        public static UIModule UI { get => TGameFramework.Instance.GetModule<UIModule>(); }
 
         private bool activing;
 
@@ -39,10 +50,11 @@ namespace Koakuma.Game
 
             activing = true;
             DontDestroyOnLoad(gameObject); //跳转不销毁
-
+            ConfigManager.LoadAllConfigsByAddressable("Assets/BundleAssets/Config");
             TGameFramework.Initialize(); // 初始化游戏框架
             StartupModules(); // 启动模块
             TGameFramework.Instance.InitModules(); // 初始化所有模块
+            GameManager.UI.OpenUI(UIViewID.LoginUI) ;
         }
 
         /// <summary>
