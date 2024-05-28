@@ -25,7 +25,9 @@ namespace TGame.Editor.Inspector
             // 查找并缓存序列化属性
             proceduresProperty = serializedObject.FindProperty("proceduresNames");//通过序列化的名称查找序列化对象中的对应属性
             defaultProcedureProperty = serializedObject.FindProperty("defaultProcedureName");
-            ageproceduresProperty= serializedObject.FindProperty("defaultProcedureName");
+            ageproceduresProperty= serializedObject.FindProperty("age");
+            ageproceduresProperty.GetArrayElementAtIndex(0).intValue=222;
+            serializedObject.ApplyModifiedProperties(); // 应用修改
             // 更新过程列表
             UpdateProcedures();
         }
