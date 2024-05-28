@@ -24,7 +24,7 @@ public static class ConfigTool
         {
             Namespace = "Config",
             ConfigDefinitions = types.ToArray(),
-            ExcelDirectory = Application.dataPath + "/../../design/config",
+            ExcelDirectory = Application.dataPath + "/../design/config",
             SerializeDirectory = Application.dataPath + "/BundleAssets/Config",
             CodeDirectory = Application.dataPath + "/Scripts/HotUpdate/Config/Code",
             WriteExcel = false,
