@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class MyCollection:IEnumerable<int>
 {
@@ -75,6 +76,7 @@ public class Test : MonoBehaviour
             Debug.Log(item);
         }
         Debug.Log("更改提交");
+
     }
 
     // Update is called once per frame

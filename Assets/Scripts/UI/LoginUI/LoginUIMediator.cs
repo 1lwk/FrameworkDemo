@@ -54,8 +54,8 @@ public class LoginUIMediator : UIMediator<LoginUIView>
 
     protected override void OnHide()
     {
+        view.btn_login.onClick.RemoveListener(OnClickLoginBtnCall);
+        view.btn_shut.onClick.RemoveListener(OnClickShutLoginUiView);
         base.OnHide();
-        //view.btn_login.onClick.RemoveListener(OnClickLoginBtnCall);
-        //view.btn_shut.onClick.RemoveListener(OnClickShutLoginUiView);
     }
 }

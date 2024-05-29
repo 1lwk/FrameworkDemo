@@ -24,16 +24,17 @@ namespace Koakuma.Game
         [Module(2)]
         public static ProcedureModule Procedure { get => TGameFramework.Instance.GetModule<ProcedureModule>(); }
         /// <summary>
-        /// 消息模块，使用Module特性标记，优先级为6
-        /// </summary>
-        [Module(6)]
-        public static MessageModule Message { get => TGameFramework.Instance.GetModule<MessageModule>(); }
-        /// <summary>
         /// UI模块 使用Module特性标记 优先级为3
         /// </summary>
         [Module(3)]
         public static UIModule UI { get => TGameFramework.Instance.GetModule<UIModule>(); }
-
+        /// <summary>
+        /// 消息模块，使用Module特性标记，优先级为6
+        /// </summary>
+        [Module(6)]
+        public static MessageModule Message { get => TGameFramework.Instance.GetModule<MessageModule>(); }
+        //[Module(7)]
+        //public static ECSModule ECS { get => TGameFramework.Instance.GetModule<ECSModule>(); }
         private bool activing;
 
         /// <summary>
