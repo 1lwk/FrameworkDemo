@@ -21,17 +21,27 @@ public abstract class UIMediator<T> : UIMediator where T : UIView
         view = ViewObject.GetComponent<T>();
     }
 
+    /// <summary>
+    /// 重写基类的隐藏方法 关闭UI界面的时候调用
+    /// </summary>
     protected override void OnHide()
     {
         view = default;
         base.OnHide();
     }
 
+    /// <summary>
+    /// 关闭UI界面的方法
+    /// </summary>
     protected void Close()
     {
         TGameFramework.Instance.GetModule<UIModule>().CloseUI(this);
     }
 
+    /// <summary>
+    /// 重写基类初始化方法
+    /// </summary>
+    /// <param name="view">UIview对象</param>
     public override void InitMediator(UIView view)
     {
         base.InitMediator(view);
@@ -52,13 +62,13 @@ public abstract class UIMediator
 
     // UI视图对象
     public GameObject ViewObject { get; set; }
-    // 事件表，用于管理UI事件
+    // 事件表用于管理UI事件
     public UIEventTable eventTable { get; set; }
-    // 名称表，用于管理UI元素名称
+    // 名称表用于管理UI元素名称
     public UINameTable nameTable { get; set; }
-    // 排序顺序，用于控制UI的显示层级
+    // 层级用于控制UI的显示层级
     public int SortingOrder { get; set; }
-    // UI模式，用于定义UI的显示模式
+    // UI模式用于定义UI的显示模式
     public UIMode UIMode { get; set; }
 
     /// <summary>

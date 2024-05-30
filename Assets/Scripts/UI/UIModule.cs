@@ -72,7 +72,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         {
             if (type.IsAbstract) // 如果类型是抽象的，则跳过
                 continue;
-            if (baseViewType.IsAssignableFrom(type)) // 如果类型是UIView的子类
+            if (baseViewType.IsAssignableFrom(type)) // 如果类型是UIView的子类（基类或者接口都是返回True）
             {
                 //获取 type 类型上应用的所有 UIViewAttribute 特性 并将它们存储在 attrs 数组中 bool指的是是否去基类上查找
                 object[] attrs = type.GetCustomAttributes(typeof(UIViewAttribute), false); 
