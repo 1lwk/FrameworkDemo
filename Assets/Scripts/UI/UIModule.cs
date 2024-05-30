@@ -22,16 +22,16 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
     // Quantum Console的预制件 用于调试和控制台操作
     public QuantumConsole prefabQuantumConsole; 
 
-    // 用于存储UIViewID与Mediator类型之间的映射
+    // 用于存储UIViewID与Mediator实例
     private static Dictionary<UIViewID, Type> MEDIATOR_MAPPING;
 
-    // 用于存储UIViewID与Asset类型之间的映射
+    // 用于存储UIViewID与Asset的实例
     private static Dictionary<UIViewID, Type> ASSET_MAPPING;
 
     // 当前正在使用的UIMediator列表
     private readonly List<UIMediator> usingMediators = new List<UIMediator>();
 
-    // 存储闲置的UIMediator实例，按类型分类
+    // 存储空闲的UIMediator实例，按类型分类
     private readonly Dictionary<Type, Queue<UIMediator>> freeMediators = new Dictionary<Type, Queue<UIMediator>>();
 
     // UI对象池，用于管理UI对象的加载和回收
@@ -58,7 +58,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         //quantumConsole.OnDeactivate -= OnConsoleDeactive; // 取消订阅Quantum Console停用事件
     }
 
-    // 缓存UI映射关系的方法 通过Typeof获取到UIView的类型 
+    // 缓存和初始化 UIView的实例和UIMeditor实例
     private static void CacheUIMapping()
     {
         if (MEDIATOR_MAPPING != null) // 如果MEDIATOR_MAPPING已初始化，则返回
@@ -72,10 +72,10 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         {
             if (type.IsAbstract) // 如果类型是抽象的，则跳过
                 continue;
-
             if (baseViewType.IsAssignableFrom(type)) // 如果类型是UIView的子类
             {
-                object[] attrs = type.GetCustomAttributes(typeof(UIViewAttribute), false); // 获取类型的UIViewAttribute属性
+                //获取 type 类型上应用的所有 UIViewAttribute 特性 并将它们存储在 attrs 数组中 bool指的是是否去基类上查找
+                object[] attrs = type.GetCustomAttributes(typeof(UIViewAttribute), false); 
                 if (attrs.Length == 0) // 如果没有UIViewAttribute属性
                 {
                     Debug.LogError($"{type.FullName} 没有绑定 Mediator，请使用UIMediatorAttribute绑定一个Mediator以正确使用"); // 输出错误日志
@@ -84,8 +84,8 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
 
                 foreach (UIViewAttribute attr in attrs) // 遍历所有UIViewAttribute属性
                 {
-                    MEDIATOR_MAPPING.Add(attr.ID, attr.MediatorType); // 添加UIViewID和Mediator类型的映射
-                    ASSET_MAPPING.Add(attr.ID, type); // 添加UIViewID和Asset类型的映射
+                    MEDIATOR_MAPPING.Add(attr.ID, attr.MediatorType); // 添加UIViewID和Mediator实例
+                    ASSET_MAPPING.Add(attr.ID, type); // 添加UIViewID和Asset实例
                     break;
                 }
             }
@@ -116,7 +116,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         //GameManager.Input.SetEnable(true); // 启用游戏管理器的输入
     }
 
-    // 获取指定模式下最高排序顺序的方法
+    // 获取指定模式下顶层Meditor的SortingOrder
     private int GetTopMediatorSortingOrder(UIMode mode)
     {
         int lastIndexMediatorOfMode = -1; // 初始化最后一个指定模式的UIMediator的索引
@@ -319,7 +319,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         }
 
         mediator.UIMode = uiConfig.Mode; // 设置mediator的UIMode
-        int sortingOrder = GetTopMediatorSortingOrder(uiConfig.Mode) + 10; // 获取顶层排序顺序并加10
+        int sortingOrder = GetTopMediatorSortingOrder(uiConfig.Mode) + 10; // 获取顶层Meditor的SortingOrder并加10
 
         usingMediators.Add(mediator); // 将mediator添加到usingMediators列表
 
@@ -337,8 +337,8 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
             canvas.sortingLayerName = "ModalUI"; // 设置Canvas的排序层为ModalUI
         }
 
-        mediator.SortingOrder = sortingOrder; // 设置mediator的排序顺序
-        canvas.sortingOrder = sortingOrder; // 设置Canvas的排序顺序
+        mediator.SortingOrder = sortingOrder; // 设置mediator的SortingOrder
+        canvas.sortingOrder = sortingOrder; // 设置Canvas的SortingOrder
 
         uiObject.SetActive(true); // 激活UI对象
         mediator.Show(uiObject, obj); // 显示UI

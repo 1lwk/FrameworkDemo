@@ -19,7 +19,6 @@ public abstract class UIMediator<T> : UIMediator where T : UIView
     {
         base.OnShow(arg);
         view = ViewObject.GetComponent<T>();
-
     }
 
     protected override void OnHide()
