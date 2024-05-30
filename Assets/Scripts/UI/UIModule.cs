@@ -297,6 +297,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         }
         yield return null; // 等待一帧
         yield return null; // 等待一帧
+        Debug.Log("");
     }
 
     // 处理UI对象加载完成的方法

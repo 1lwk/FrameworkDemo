@@ -6,3 +6,4 @@ namespace Config
         Modal = 1,//ģ̬ģʽ
     }
 }
+ 

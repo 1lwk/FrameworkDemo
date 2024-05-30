@@ -76,7 +76,12 @@ public class Test : MonoBehaviour
             Debug.Log(item);
         }
         Debug.Log("更改提交");
+        StartCoroutine(RunTest());
+    }
 
+    IEnumerator RunTest()
+    {
+        yield return new WaitForSeconds(1);
     }
 
     // Update is called once per frame

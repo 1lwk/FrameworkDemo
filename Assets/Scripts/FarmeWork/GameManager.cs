@@ -33,8 +33,8 @@ namespace Koakuma.Game
         /// </summary>
         [Module(6)]
         public static MessageModule Message { get => TGameFramework.Instance.GetModule<MessageModule>(); }
-        //[Module(7)]
-        //public static ECSModule ECS { get => TGameFramework.Instance.GetModule<ECSModule>(); }
+        [Module(7)]
+        public static ECSModule ECS { get => TGameFramework.Instance.GetModule<ECSModule>(); }
         private bool activing;
 
         /// <summary>
