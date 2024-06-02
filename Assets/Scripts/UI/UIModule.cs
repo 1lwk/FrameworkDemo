@@ -104,16 +104,14 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
         UpdateMask(deltaTime); // 更新UI遮罩
     }
 
-    // Quantum Console激活事件处理方法
     private void OnConsoleActive()
     {
-        //GameManager.Input.SetEnable(false); // 禁用游戏管理器的输入
+
     }
 
-    // Quantum Console停用事件处理方法
     private void OnConsoleDeactive()
     {
-        //GameManager.Input.SetEnable(true); // 启用游戏管理器的输入
+        
     }
 
     // 获取指定模式下顶层Meditor的SortingOrder
@@ -139,7 +137,7 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
     // 获取指定UIViewID的UIMediator实例的方法
     private UIMediator GetMediator(UIViewID id)
     {
-        CacheUIMapping(); // 缓存UI映射关系
+        CacheUIMapping(); // 缓存UI
 
         if (!MEDIATOR_MAPPING.TryGetValue(id, out Type mediatorType)) // 尝试获取UIViewID对应的Mediator类型
         {
@@ -189,16 +187,16 @@ public partial class UIModule : BaseGameModule // 继承自BaseGameModule的UI�
             return null;
 
         UIMediator mediator = GetMediator(id); // 获取UIMediator实例
-        if (mediator == null) // 如果mediator为空，则返回null
+        if (mediator == null)
             return null;
 
         Type requiredMediatorType = mediator.GetType(); // 获取mediator的类型
-        foreach (var item in usingMediators) // 遍历所有正在使用的UIMediator
+        foreach (var item in usingMediators)
         {
             if (item.GetType() == requiredMediatorType) // 如果类型匹配，则返回该UIMediator
                 return item;
         }
-        return null; // 返回null
+        return null;
     }
 
     // 将指定UIViewID的UI提升到顶层的方法
