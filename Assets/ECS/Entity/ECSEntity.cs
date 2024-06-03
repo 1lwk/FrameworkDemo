@@ -2,28 +2,28 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// 表示实体-组件-系统（ECS）框架中的实体类，实现了 IDisposable 接口。
+/// 表示实体-组件-系统（ECS）框架中的实体类，实现了 IDisposable 接口
 /// </summary>
 public class ECSEntity : IDisposable
 {
     /// <summary>
-    /// 获取实体的唯一标识符。
+    /// 获取实体的唯一标识符
     /// </summary>
     public long InstanceID { get; private set; }
 
     /// <summary>
-    /// 获取父实体的标识符。
+    /// 获取父实体的标识符
     /// </summary>
     public long ParentID { get; private set; }
 
     /// <summary>
-    /// 获取一个值，指示此实体是否已被释放。
+    /// 获取一个值，指示此实体是否已被释放
     /// </summary>
     public bool Disposed { get; private set; }
 
     /// <summary>
-    /// 获取父实体。
-    /// 如果 ParentID 为 0，则返回默认值。
+    /// 获取父实体
+    /// 如果 ParentID 为 0，则返回默认值
     /// </summary>
     public ECSEntity Parent
     {
@@ -32,19 +32,19 @@ public class ECSEntity : IDisposable
             if (ParentID == 0)
                 return default;
 
-            // 从 ECS 模块中查找并返回父实体。
+            // 从 ECS 模块中查找并返回父实体
             return TGameFramework.Instance.GetModule<ECSModule>().FindEntity(ParentID);
         }
     }
 
     /// <summary>
-    /// 获取或设置场景标识符。
+    /// 获取或设置场景标识符
     /// </summary>
     public long SceneID { get; set; }
 
     /// <summary>
-    /// 获取关联的场景。
-    /// 如果 SceneID 为 0，则返回默认值。
+    /// 获取关联的场景
+    /// 如果 SceneID 为 0，则返回默认值
     /// </summary>
     public ECSScene Scene
     {
@@ -53,30 +53,30 @@ public class ECSEntity : IDisposable
             if (SceneID == 0)
                 return default;
 
-            // 从 ECS 模块中查找并返回关联的场景。
+            // 从 ECS 模块中查找并返回关联的场景
             return TGameFramework.Instance.GetModule<ECSModule>().FindEntity(SceneID) as ECSScene;
         }
     }
 
-    // 存储子实体的列表。
+    // 存储子实体的列表
     private List<ECSEntity> children = new List<ECSEntity>();
 
-    // 存储组件的字典，键为组件类型，值为组件实例。
+    // 存储组件的字典，键为组件类型，值为组件实例
     private Dictionary<Type, ECSComponent> componentMap = new Dictionary<Type, ECSComponent>();
 
     /// <summary>
-    /// 初始化 ECSEntity 类的新实例，并生成唯一的 ID。
+    /// 初始化 ECSEntity 类的新实例，并生成唯一的 ID
     /// </summary>
     public ECSEntity()
     {
-        // 生成一个新的唯一 ID 并赋值给 InstanceID 属性。
+        // 生成一个新的唯一 ID 并赋值给 InstanceID 属性
         InstanceID = IDGenerator.NewInstanceID();
-        // 将实体添加到 ECS 模块中。
+        // 将实体添加到 ECS 模块中
         TGameFramework.Instance.GetModule<ECSModule>().AddEntity(this);
     }
 
     /// <summary>
-    /// 释放实体及其子实体和组件。
+    /// 释放实体及其子实体和组件
     /// </summary>
     public virtual void Dispose()
     {

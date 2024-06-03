@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class ECSModule : BaseGameModule
 {
@@ -10,17 +11,17 @@ public class ECSModule : BaseGameModule
     public ECSWorld World { get; private set; }
 
     // 各种系统的字典映射
-    private Dictionary<Type, IAwakeSystem> awakeSystemMap;
-    private Dictionary<Type, IDestroySystem> destroySystemMap;
+    private Dictionary<Type, IAwakeSystem> awakeSystemMap;//awake系统的字典
+    private Dictionary<Type, IDestroySystem> destroySystemMap;//Destory系统的字典
 
-    private Dictionary<Type, IUpdateSystem> updateSystemMap;
-    private Dictionary<IUpdateSystem, List<ECSEntity>> updateSystemRelatedEntityMap;
+    private Dictionary<Type, IUpdateSystem> updateSystemMap;//update系统的字典
+    private Dictionary<IUpdateSystem, List<ECSEntity>> updateSystemRelatedEntityMap;//update系统关联的实体容器
 
-    private Dictionary<Type, ILateUpdateSystem> lateUpdateSystemMap;
-    private Dictionary<ILateUpdateSystem, List<ECSEntity>> lateUpdateSystemRelatedEntityMap;
+    private Dictionary<Type, ILateUpdateSystem> lateUpdateSystemMap;//lateupdate系统的字典
+    private Dictionary<ILateUpdateSystem, List<ECSEntity>> lateUpdateSystemRelatedEntityMap;//lateupdate系统关联的实体容器
 
-    private Dictionary<Type, IFixedUpdateSystem> fixedUpdateSystemMap;
-    private Dictionary<IFixedUpdateSystem, List<ECSEntity>> fixedUpdateSystemRelatedEntityMap;
+    private Dictionary<Type, IFixedUpdateSystem> fixedUpdateSystemMap;//fixedupdate系统的字典
+    private Dictionary<IFixedUpdateSystem, List<ECSEntity>> fixedUpdateSystemRelatedEntityMap;//fixed系统关联的实体容器
 
     // 实体的字典映射
     private Dictionary<long, ECSEntity> entities = new Dictionary<long, ECSEntity>();
@@ -93,10 +94,12 @@ public class ECSModule : BaseGameModule
             // 如果类型有ECSSystemAttribute特性
             if (type.GetCustomAttribute<ECSSystemAttribute>(true) != null)
             {
-                // AwakeSystem
+                // AwakeSystem 获取IAwakeSystem接口的Type对象
                 Type awakeSystemType = typeof(IAwakeSystem);
+                //判断awakeSystem与type是否为基类、接口或同一个类型
                 if (awakeSystemType.IsAssignableFrom(type))
                 {
+                    //判断awake字典中是否有这个类型的key
                     if (awakeSystemMap.ContainsKey(type))
                     {
                         UnityEngine.Debug.Log($"Duplicated Awake System:{type.FullName}");
@@ -108,8 +111,9 @@ public class ECSModule : BaseGameModule
                     awakeSystemMap.Add(type, awakeSystem);
                 }
 
-                // DestroySystem
+                // DestroySystem 获取IDestroySystem接口的Type对象
                 Type destroySystemType = typeof(IDestroySystem);
+                //判断destroySystemType与type是否是基类、接口或同一个类型
                 if (destroySystemType.IsAssignableFrom(type))
                 {
                     if (destroySystemMap.ContainsKey(type))
@@ -175,7 +179,7 @@ public class ECSModule : BaseGameModule
                 }
             }
 
-            // 如果类型有EntityMessageHandlerAttribute特性
+            // 如果类型有EntityMessageHandlerAttribute特性 参数true表示也要在继承层次结构中搜索
             if (type.GetCustomAttribute<EntityMessageHandlerAttribute>(true) != null)
             {
                 // EntityMessage
@@ -194,7 +198,7 @@ public class ECSModule : BaseGameModule
                 }
             }
 
-            // 如果类型有EntityRpcHandlerAttribute特性
+            // 如果类型有EntityRpcHandlerAttribute特性 参数true表示也要在继承层次结构中搜索
             if (type.GetCustomAttribute<EntityRpcHandlerAttribute>(true) != null)
             {
                 // EntityRPC
@@ -220,52 +224,74 @@ public class ECSModule : BaseGameModule
     {
         foreach (IUpdateSystem updateSystem in updateSystemMap.Values)
         {
+            // 从字典中获取与当前 updateSystem 相关的实体列表
             List<ECSEntity> updateSystemRelatedEntities = updateSystemRelatedEntityMap[updateSystem];
+
+            // 如果实体列表为空，则跳过当前系统
             if (updateSystemRelatedEntities.Count == 0)
                 continue;
 
-            // 获取实体列表池
+            // 从对象池获取一个新的实体列表
             List<ECSEntity> entityList = ListPool<ECSEntity>.Obtain();
+
+            // 将相关实体列表中的所有实体添加到新获取的实体列表中，避免分配新内存
             entityList.AddRangeNonAlloc(updateSystemRelatedEntities);
+
+            // 遍历实体列表中的每个实体
             foreach (var entity in entityList)
             {
+                // 如果当前系统没有观察该实体，则跳过
                 if (!updateSystem.ObservingEntity(entity))
                     continue;
 
-                // 调用系统的Update方法
+                // 调用系统的 Update 方法，对实体进行更新处理
                 updateSystem.Update(entity);
             }
 
-            // 释放实体列表池
+            // 释放实体列表回对象池，以便重用
             ListPool<ECSEntity>.Release(entityList);
         }
     }
+
 
     // 驱动后更新系统
     private void DriveLateUpdateSystem()
     {
+        // 遍历 lateUpdateSystemMap 字典中的所有晚更新系统实例
         foreach (ILateUpdateSystem lateUpdateSystem in lateUpdateSystemMap.Values)
         {
+            // 从字典中获取与当前 lateUpdateSystem 相关的实体列表 
             List<ECSEntity> lateUpdateSystemRelatedEntities = lateUpdateSystemRelatedEntityMap[lateUpdateSystem];
+
+            // 如果实体列表为空，则跳过当前系统
             if (lateUpdateSystemRelatedEntities.Count == 0)
                 continue;
 
-            // 获取实体列表池
+            // 从对象池获取一个新的实体列表
             List<ECSEntity> entityList = ListPool<ECSEntity>.Obtain();
+
+            // 将相关实体列表中的所有实体添加到新获取的实体列表中，避免分配新内存
             entityList.AddRangeNonAlloc(lateUpdateSystemRelatedEntities);
+
+            // 遍历实体列表中的每个实体
             foreach (var entity in entityList)
             {
+                // 如果当前系统没有观察到该实体，则跳过
                 if (!lateUpdateSystem.ObservingEntity(entity))
                     continue;
 
-                // 调用系统的LateUpdate方法
+                // 调用系统的 LateUpdate 方法，对实体进行更新处理
                 lateUpdateSystem.LateUpdate(entity);
             }
-            // 释放实体列表池
+
+            // 将实体列表释放回对象池，以便重用
             ListPool<ECSEntity>.Release(entityList);
         }
     }
 
+    /// <summary>
+    /// 固定帧更新
+    /// </summary>
     private void DriveFixedUpdateSystem()
     {
         // 遍历所有的固定更新系统
@@ -294,9 +320,14 @@ public class ECSModule : BaseGameModule
         }
     }
 
+    /// <summary>
+    /// 获取awake系统 添加到集合中
+    /// </summary>
+    /// <typeparam name="C"></typeparam>
+    /// <param name="list"></param>
     private void GetAwakeSystems<C>(List<IAwakeSystem> list) where C : ECSComponent
     {
-        // 遍历所有的唤醒系统，并将匹配组件类型的系统添加到列表中
+        // 遍历所有的awake系统，并将匹配组件类型的系统添加到列表中
         foreach (var awakeSystem in awakeSystemMap.Values)
         {
             if (awakeSystem.ComponentType() == typeof(C))
@@ -306,17 +337,22 @@ public class ECSModule : BaseGameModule
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="C"></typeparam>
+    /// <param name="component"></param>
     public void AwakeComponent<C>(C component) where C : ECSComponent
     {
         // 更新给定组件的实体列表
         UpdateSystemEntityList(component.Entity);
 
-        // 从池中获取一个列表并获取相关的唤醒系统
+        // 从池中获取一个列表并获取相关的Awake系统
         List<IAwakeSystem> list = ListPool<IAwakeSystem>.Obtain();
         GetAwakeSystems<C>(list);
 
         bool found = false;
-        // 遍历唤醒系统并调用组件的Awake方法
+        // 遍历Awake系统并调用组件的Awake方法
         foreach (var item in list)
         {
             AwakeSystem<C> awakeSystem = item as AwakeSystem<C>;
@@ -331,7 +367,7 @@ public class ECSModule : BaseGameModule
         ListPool<IAwakeSystem>.Release(list);
         if (!found)
         {
-            UnityEngine.Debug.Log($"未找到唤醒系统:<{typeof(C).Name}>");
+            UnityEngine.Debug.Log($"未找到Awake系统:<{typeof(C).Name}>");
         }
     }
 
@@ -509,14 +545,22 @@ public class ECSModule : BaseGameModule
         ListPool<IDestroySystem>.Release(list);
     }
 
+    /// <summary>
+    /// 更新更新系统的实体列表
+    /// </summary>
+    /// <param name="entity"></param>
     private void UpdateSystemEntityList(ECSEntity entity)
     {
-        // 更新更新系统的实体列表
+        // 遍历 updateSystemMap 字典中的所有更新系统实例
         foreach (IUpdateSystem updateSystem in updateSystemMap.Values)
         {
+            // 从字典中获取当前更新系统相关的实体列表
             List<ECSEntity> entityList = updateSystemRelatedEntityMap[updateSystem];
+
+            // 检查实体列表中是否不包含指定实体
             if (!entityList.Contains(entity))
             {
+                // 如果当前更新系统观察到该实体，则将实体添加到实体列表中
                 if (updateSystem.ObservingEntity(entity))
                 {
                     entityList.Add(entity);
@@ -524,12 +568,14 @@ public class ECSModule : BaseGameModule
             }
             else
             {
+                // 如果实体列表中已包含该实体，但当前更新系统不再观察该实体，则将实体从实体列表中移除
                 if (!updateSystem.ObservingEntity(entity))
                 {
                     entityList.Remove(entity);
                 }
             }
         }
+
 
         // 更新晚期更新系统的实体列表
         foreach (ILateUpdateSystem lateUpdateSystem in lateUpdateSystemMap.Values)
@@ -620,46 +666,71 @@ public class ECSModule : BaseGameModule
     // 异步发送消息到特定实体
     public async Task SendMessageToEntity<M>(long id, M m)
     {
+        // 如果ID为0，则直接返回
         if (id == 0)
             return;
 
+        // 根据ID查找对应的实体
         ECSEntity entity = FindEntity(id);
+
+        // 如果未找到对应的实体，则直接返回
         if (entity == null)
             return;
 
+        // 获取消息的类型
         Type messageType = m.GetType();
+
+        // 在entityMessageHandlerMap中查找是否有与消息类型对应的处理程序列表
         if (!entityMessageHandlerMap.TryGetValue(messageType, out List<IEntityMessageHandler> list))
             return;
 
+        // 从对象池中获取一个新的处理程序列表
         List<IEntityMessageHandler> entityMessageHandlers = ListPool<IEntityMessageHandler>.Obtain();
+
+        // 将找到的处理程序列表添加到新的处理程序列表中
         entityMessageHandlers.AddRangeNonAlloc(list);
+
+        // 遍历新的处理程序列表，调用每个处理程序的Post方法，传递实体和消息
         foreach (IEntityMessageHandler<M> handler in entityMessageHandlers)
         {
             await handler.Post(entity, m);
         }
 
+        // 将处理程序列表释放回对象池中
         ListPool<IEntityMessageHandler>.Release(entityMessageHandlers);
     }
 
     // 异步发送远程过程调用（RPC）到特定实体并获取响应
     public async Task<Response> SendRpcToEntity<Request, Response>(long entityID, Request request) where Response : IEntityRpcResponse, new()
     {
+        // 检查实体ID是否为0，如果是则返回错误响应
         if (entityID == 0)
             return new Response() { Error = true };
 
+        // 根据实体ID查找对应的实体
         ECSEntity entity = FindEntity(entityID);
+
+        // 如果实体为空，表示未找到对应的实体，返回错误响应
         if (entity == null)
             return new Response() { Error = true };
 
+        // 获取请求的类型
         Type messageType = request.GetType();
+
+        // 在entityRpcHandlerMap中查找是否有与请求类型对应的处理程序
         if (!entityRpcHandlerMap.TryGetValue(messageType, out IEntityRpcHandler entityRpcHandler))
             return new Response() { Error = true };
 
+        // 尝试将找到的处理程序转换为具体的处理程序类型
         IEntityRpcHandler<Request, Response> handler = entityRpcHandler as IEntityRpcHandler<Request, Response>;
+
+        // 如果转换失败，表示类型不匹配，返回错误响应
         if (handler == null)
             return new Response() { Error = true };
 
+        // 调用处理程序的Post方法，传递实体和请求，并等待其执行完成，返回处理结果
         return await handler.Post(entity, request);
+
     }
 }
 

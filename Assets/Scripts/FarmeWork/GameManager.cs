@@ -55,6 +55,7 @@ namespace Koakuma.Game
             TGameFramework.Initialize(); // 初始化游戏框架
             StartupModules(); // 启动模块
             TGameFramework.Instance.InitModules(); // 初始化所有模块
+            //var userInfo = GameManager.ECS.World.GetComponent<PlayerInfoComponent>().userInfo;
         }
 
         /// <summary>
